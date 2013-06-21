@@ -34,13 +34,14 @@ def runTests():
     assert boardWinning(board3, 'X') == 2.0 / 3.0
     assert boardWinning(board3, 'O') == 0.0
 
-runTests()
+#runTests()
 
 
 class TicTacToeGame(object):
-    def __init__(self):
+    def __init__(self, player='X'):
         self.board = Board()
         self.turn = 'X'
+        self.player = player
 
     def play(self):
         isWon = False
@@ -58,12 +59,12 @@ class TicTacToeGame(object):
         print "Game was won by %s" % winner
 
     def nextMove(self):
-        if self.turn == 'X':
+        if self.turn == self.player:
             bestMove = None
             # starting with -1 so we'll definitely replace it
             bestMoveProbabilityOfWinning = -1
             for board in self.board.possibleMoves():
-                pWinning = boardWinning(board)
+                pWinning = boardWinning(board, self.player)
                 print pWinning
                 if pWinning > bestMoveProbabilityOfWinning:
                     print "%f better than %f" % (pWinning, bestMoveProbabilityOfWinning)
@@ -75,7 +76,6 @@ class TicTacToeGame(object):
             newBoardSpaces = self.board.spaces[:]
             while not validMove:
                 spaceIndex = int(raw_input("What space do you want to play in? "))
-                print spaceIndex
                 if spaceIndex < 1 or spaceIndex > 9:
                     print "Please select a valid space"
                 else:
@@ -84,12 +84,12 @@ class TicTacToeGame(object):
                         print "That space is full!"
                     else:
                         validMove = True
-                        newBoardSpaces[spaceIndex] = 'O'
+                        # Player is 'O' if AI is 'X' and vice versa
+                        newBoardSpaces[spaceIndex] = 'O' if self.player == 'X' else 'X'
                         nextBoard = Board(newBoardSpaces)
 
         self.turn = 'O' if self.turn == 'X' else 'X'
-        print self.turn
         return nextBoard
 
-newGame = TicTacToeGame()
+newGame = TicTacToeGame('O')
 newGame.play()
