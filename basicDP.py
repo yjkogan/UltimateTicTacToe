@@ -1,85 +1,4 @@
-class Board(object):
-
-    def __init__(self, spaces=None):
-        self.spaces = spaces[:] if spaces else [None for i in range(9)]
-
-        self.isXTurn = True
-
-    def __str__(self):
-        return self.spaces.__str__()
-
-    def possibleMoves(self):
-        moves = []
-        for i, space in enumerate(self.spaces):
-            if not space:
-                nextBoard = self.spaces[:]
-                nextBoard[i] = 'X' if self.isXTurn else 'O'
-                newBoard = Board(nextBoard)
-                newBoard.isXTurn = False if self.isXTurn else True
-                moves.append(newBoard)
-        return moves
-
-    def isFull(self):
-        for space in self.spaces:
-            if not space:
-                return False
-        return True
-
-    def whoWon(self):
-
-        def rowWin(player):
-            for i in range(3):
-                if len([True for j in self.getRow(i) if j == player]) == 3:
-                    return True
-            return False
-
-        def columnWin(player):
-            for i in range(3):
-                if len([True for j in self.getColumn(i) if j == player]) == 3:
-                    return True
-            return False
-
-        def diagWin(player):
-            for i in range(2):
-                if len([True for j in self.getDiag(i) if j == player]) == 3:
-                    return True
-            return False
-
-        xWon = (rowWin('X') or columnWin('X') or diagWin('X'))
-        oWon = (rowWin('O') or columnWin('O') or diagWin('O'))
-
-        if xWon or oWon:
-            if xWon:
-                return (True, 'X')
-            elif oWon:
-                return (True, 'O')
-            else:
-                return (False, None)
-        else:
-            return (False, None)
-
-    def getRow(self, r):
-        if r > 2:
-            return None
-
-        start = r * 3
-        return self.spaces[start:start + 3]
-
-    def getColumn(self, c):
-        if c > 2:
-            return None
-
-        start = c
-        return [self.spaces[start + i * 3] for i in range(3)]
-
-    def getDiag(self, d):
-
-        if d > 1:
-            return None
-
-        start = 2 * d
-        step = 4 - start
-        return [self.spaces[start + step * i] for i in range(3)]
+from board import Board
 
 
 def boardWinning(board, player='X'):
@@ -116,3 +35,61 @@ def runTests():
     assert boardWinning(board3, 'O') == 0.0
 
 runTests()
+
+
+class TicTacToeGame(object):
+    def __init__(self):
+        self.board = Board()
+        self.turn = 'X'
+
+    def play(self):
+        isWon = False
+        while not isWon:
+            # if this evaluates to True, then isWon must be False
+            # so we have a cat's game
+            if self.board.isFull():
+                winner = "The cat"
+                break
+
+            print self.board.prettyPrint()
+            self.board = self.nextMove()
+            isWon, winner = self.board.whoWon()
+
+        print "Game was won by %s" % winner
+
+    def nextMove(self):
+        if self.turn == 'X':
+            bestMove = None
+            # starting with -1 so we'll definitely replace it
+            bestMoveProbabilityOfWinning = -1
+            for board in self.board.possibleMoves():
+                pWinning = boardWinning(board)
+                print pWinning
+                if pWinning > bestMoveProbabilityOfWinning:
+                    print "%f better than %f" % (pWinning, bestMoveProbabilityOfWinning)
+                    bestMoveProbabilityOfWinning = pWinning
+                    bestMove = board
+            nextBoard = bestMove
+        else:
+            validMove = False
+            newBoardSpaces = self.board.spaces[:]
+            while not validMove:
+                spaceIndex = int(raw_input("What space do you want to play in? "))
+                print spaceIndex
+                if spaceIndex < 1 or spaceIndex > 9:
+                    print "Please select a valid space"
+                else:
+                    spaceIndex -= 1  # map index to board array
+                    if self.board.spaces[spaceIndex]:
+                        print "That space is full!"
+                    else:
+                        validMove = True
+                        newBoardSpaces[spaceIndex] = 'O'
+                        nextBoard = Board(newBoardSpaces)
+
+        self.turn = 'O' if self.turn == 'X' else 'X'
+        print self.turn
+        return nextBoard
+
+newGame = TicTacToeGame()
+newGame.play()
