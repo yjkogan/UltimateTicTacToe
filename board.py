@@ -3,7 +3,8 @@ class Board(object):
     def __init__(self, spaces=None):
         self.spaces = spaces[:] if spaces else [None for i in range(9)]
 
-        self.isXTurn = True
+        nBlankSpaces = len([True for i in self.spaces if not i])
+        self.isXTurn = True if (nBlankSpaces % 2) == 2 else False
 
     def __str__(self):
         return self.spaces.__str__()
@@ -20,6 +21,7 @@ class Board(object):
                 if j != len(r) - 1:
                     print '|',
             print ''
+        return ''
 
     def possibleMoves(self):
         moves = []
