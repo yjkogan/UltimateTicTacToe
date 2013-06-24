@@ -4,7 +4,7 @@ class Board(object):
         self.spaces = spaces[:] if spaces else [None for i in range(9)]
 
         nBlankSpaces = len([True for i in self.spaces if not i])
-        self.isXTurn = True if (nBlankSpaces % 2) == 2 else False
+        self.isXTurn = False if (nBlankSpaces % 2) == 0 else True
 
     def __str__(self):
         return self.spaces.__str__()
