@@ -1,4 +1,5 @@
 from board import Board
+from collections import defaultdict
 
 
 def boardWinning(board, player='X'):
@@ -13,12 +14,20 @@ def boardWinning(board, player='X'):
 
     winProbability = 0.0
 
-    possibleMoves = board.possibleMoves()
-    for nextBoard in possibleMoves:
-        winProbability += boardWinning(nextBoard, player)
+    # Memoize by the spaces array since I'm not sure how instances will be cached
+    # I think there's a "magic method" that can solve this problem but for now
+    # let's do it the easy way
+    if tuple(board.spaces) not in boardWinning.probabilities:
+        possibleMoves = board.possibleMoves()
+        for nextBoard in possibleMoves:
+            winProbability += boardWinning(nextBoard, player)
 
-    return (winProbability / len(possibleMoves))
+        boardWinning.probabilities[tuple(board.spaces)] = (winProbability / len(possibleMoves))
+        return (winProbability / len(possibleMoves))
+    else:
+        return boardWinning.probabilities[tuple(board.spaces)]
 
+boardWinning.probabilities = defaultdict(list)
 
 def runTests():
     print 'running Tests For Board 1'
