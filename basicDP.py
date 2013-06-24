@@ -4,7 +4,7 @@ from board import Board
 def boardWinning(board, player='X'):
     isWon, winner = board.whoWon()
     if isWon:
-        winProbability = 1 if winner == player else 0
+        winProbability = 1 if winner == player else -1
         return winProbability
     else:
         if board.isFull():
