@@ -47,9 +47,9 @@ def runTests():
 
 
 class TicTacToeGame(object):
-    def __init__(self, player='X'):
+    def __init__(self, player='X',turn='X'):
         self.board = Board()
-        self.turn = 'X'
+        self.turn = turn
         self.player = player
 
     def play(self):
